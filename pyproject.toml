@@ -30,6 +30,7 @@ dependencies = [
     "openai>=1.0",
     "langchain-experimental>=0.4.1",
     "langchain-ollama>=1.0.1",
+    "langchain-chroma>=1.1.0",
 ]
 
 [project.optional-dependencies]

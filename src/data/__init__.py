@@ -8,6 +8,7 @@ from src.data.repositories import (
     MarketRepository,
     PartnershipRepository,
 )
+from src.data.vector_store import VectorStore, get_vector_store
 
 __all__ = [
     "Database",
@@ -17,4 +18,6 @@ __all__ = [
     "TechnologyRepository",
     "MarketRepository",
     "PartnershipRepository",
+    "VectorStore",
+    "get_vector_store",
 ]

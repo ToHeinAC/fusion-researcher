@@ -126,9 +126,23 @@ The MVP implementation is complete with all core features:
 - ✅ Report generation (Market Overview, Company Profile, Investment Thesis)
 - ✅ Settings and configuration management
 
-## Next Steps (Phase 2)
-1. Add ChromaDB vector store for semantic search
-2. Implement weekly news digest automation
-3. Add data export to Excel/PDF
-4. Implement multi-user authentication
-5. Deploy to Streamlit Cloud or Docker
+## Phase 2: Advanced Features
+
+### 2.1 Semantic Search (ChromaDB)
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Add chromadb + langchain-chroma dependencies | ✅ DONE | uv add |
+| Create src/data/vector_store.py | ✅ DONE | ChromaDB wrapper with Ollama embeddings |
+| Create scripts/populate_vector_store.py | ✅ DONE | Populate from SQLite data |
+| Create src/services/semantic_search_service.py | ✅ DONE | Search with LLM answer generation |
+| Add Semantic Search tab to Research page | ✅ DONE | Full UI with filters |
+
+### 2.2 Remaining Phase 2 Tasks
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Implement weekly news digest automation | ⏳ PENDING | |
+| Add data export to Excel/PDF | ⏳ PENDING | |
+| Implement multi-user authentication | ⏳ PENDING | |
+| Deploy to Streamlit Cloud or Docker | ⏳ PENDING | |

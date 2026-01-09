@@ -29,8 +29,9 @@ try:
     report_service = ReportService(db)
     
     # Tabs for different research functions
-    tab1, tab2, tab3, tab4 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "🔍 Natural Language Query",
+        "🧠 Semantic Search",
         "📊 SWOT Analysis",
         "⚖️ Company Comparison",
         "📄 Report Generation",
@@ -99,6 +100,128 @@ try:
                 st.warning("Please enter a query.")
     
     with tab2:
+        st.markdown("### 🧠 Semantic Search")
+        st.markdown("Search across all fusion research data using AI-powered semantic similarity.")
+        
+        ollama_model = st.session_state.get("llm_model", "qwen3:8b")
+        ollama_url = st.session_state.get("ollama_base_url", "http://localhost:11434")
+        
+        # Check if vector store is populated
+        try:
+            from src.data.vector_store import get_vector_store
+            from src.services.semantic_search_service import SemanticSearchService
+            from src.llm.chain_factory import get_llm
+            
+            vector_store = get_vector_store(ollama_base_url=ollama_url)
+            stats = vector_store.get_collection_stats()
+            
+            if stats["count"] == 0:
+                st.warning("⚠️ Vector store is empty. Run `uv run python scripts/populate_vector_store.py` to populate it.")
+            else:
+                st.success(f"✅ Vector store ready: {stats['count']} documents indexed")
+                
+                # Search type selector
+                search_type = st.selectbox(
+                    "Search scope:",
+                    ["All", "Companies", "Technologies", "Markets", "Research Documents"],
+                    key="semantic_search_type",
+                )
+                
+                filter_map = {
+                    "All": None,
+                    "Companies": "company",
+                    "Technologies": "technology",
+                    "Markets": "market",
+                    "Research Documents": "research",
+                }
+                
+                # Sample queries
+                sample_semantic = [
+                    "German fusion startups with high TRL",
+                    "Stellarator technology advantages and challenges",
+                    "Fusion market growth in Europe",
+                    "Companies with tokamak approach",
+                    "Investment trends in fusion energy",
+                ]
+                
+                selected_semantic = st.selectbox(
+                    "Sample queries:",
+                    [""] + sample_semantic,
+                    key="semantic_sample",
+                )
+                
+                semantic_query = st.text_area(
+                    "Enter your search query:",
+                    value=selected_semantic,
+                    height=80,
+                    placeholder="e.g., What companies are working on stellarator technology?",
+                    key="semantic_query_input",
+                )
+                
+                col1, col2 = st.columns([1, 1])
+                with col1:
+                    num_results = st.slider("Number of results:", 3, 15, 5, key="semantic_k")
+                with col2:
+                    generate_answer = st.checkbox("Generate AI answer", value=True, key="semantic_answer")
+                
+                if st.button("🧠 Search", type="primary", key="semantic_search_btn"):
+                    if semantic_query:
+                        with st.spinner("Searching..."):
+                            try:
+                                llm = get_llm(model=ollama_model, base_url=ollama_url) if generate_answer else None
+                                search_service = SemanticSearchService(db, vector_store, llm)
+                                
+                                if generate_answer:
+                                    result = search_service.search_with_answer(
+                                        query=semantic_query,
+                                        k=num_results,
+                                        filter_type=filter_map[search_type],
+                                    )
+                                else:
+                                    result = search_service.search(
+                                        query=semantic_query,
+                                        k=num_results,
+                                        filter_type=filter_map[search_type],
+                                    )
+                                
+                                if result.answer:
+                                    st.markdown("### 💡 AI Answer")
+                                    st.markdown(result.answer)
+                                    st.markdown("---")
+                                
+                                st.markdown(f"### 📚 Found {len(result.results)} relevant documents")
+                                
+                                for i, res in enumerate(result.results, 1):
+                                    score = res.get("score", 0)
+                                    doc_type = res.get("type", "unknown")
+                                    
+                                    # Format based on type
+                                    if doc_type == "company":
+                                        title = f"🏢 {res.get('name', 'Unknown Company')}"
+                                        subtitle = f"{res.get('country', '')} | {res.get('technology', '')} | TRL {res.get('trl', 'N/A')}"
+                                    elif doc_type == "technology":
+                                        title = f"🔬 {res.get('name', 'Unknown Technology')}"
+                                        subtitle = f"Approach: {res.get('approach', '')}"
+                                    elif doc_type == "market":
+                                        title = f"📊 {res.get('region', 'Unknown Market')}"
+                                        subtitle = f"Size: ${res.get('market_size', 0):,.0f} | CAGR: {res.get('cagr', 0):.1f}%"
+                                    else:
+                                        title = f"📄 Research: {res.get('section', 'Document')}"
+                                        subtitle = f"Source: {res.get('source', 'Fusion_Research.md')}"
+                                    
+                                    with st.expander(f"[{i}] {title} (relevance: {1-score:.2f})", expanded=i <= 3):
+                                        st.caption(subtitle)
+                                        st.markdown(res.get("content", "No content available"))
+                                
+                            except Exception as e:
+                                st.error(f"Search failed: {e}")
+                    else:
+                        st.warning("Please enter a search query.")
+        except Exception as e:
+            st.error(f"Vector store not available: {e}")
+            st.info("Make sure Ollama is running with the embedding model: `ollama pull nomic-embed-text`")
+    
+    with tab3:
         st.markdown("### 📊 SWOT Analysis Generator")
         st.markdown("Generate AI-powered SWOT analysis for any company.")
         
@@ -109,15 +232,16 @@ try:
         company_names = [c.name for c in companies]
         
         if company_names:
-            selected_company = st.selectbox("Select a company:", company_names)
+            selected_company = st.selectbox("Select a company:", company_names, key="swot_company")
             
             market_context = st.text_area(
                 "Additional market context (optional):",
                 placeholder="e.g., Focus on European market positioning...",
                 height=100,
+                key="swot_context",
             )
             
-            if st.button("📊 Generate SWOT", type="primary"):
+            if st.button("📊 Generate SWOT", type="primary", key="swot_btn"):
                 company = next((c for c in companies if c.name == selected_company), None)
                 if company:
                     with st.spinner(f"Generating SWOT analysis with {ollama_model}..."):
@@ -159,13 +283,14 @@ try:
                                     swot.raw_markdown,
                                     file_name=f"swot_{selected_company.replace(' ', '_')}.md",
                                     mime="text/markdown",
+                                    key="swot_download",
                                 )
                         except Exception as e:
                             st.error(f"SWOT generation failed: {e}")
-            else:
-                st.info("No companies in database.")
+        else:
+            st.info("No companies in database.")
     
-    with tab3:
+    with tab4:
         st.markdown("### ⚖️ Company Comparison")
         st.markdown("Compare two companies head-to-head.")
         
@@ -231,7 +356,7 @@ try:
         else:
             st.info("Need at least 2 companies for comparison.")
     
-    with tab4:
+    with tab5:
         st.markdown("### 📄 Report Generation")
         st.markdown("Generate comprehensive market reports.")
         
