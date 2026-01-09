@@ -31,6 +31,7 @@ dependencies = [
     "langchain-experimental>=0.4.1",
     "langchain-ollama>=1.0.1",
     "langchain-chroma>=1.1.0",
+    "feedparser>=6.0.12",
 ]
 
 [project.optional-dependencies]

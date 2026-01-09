@@ -138,11 +138,19 @@ The MVP implementation is complete with all core features:
 | Create src/services/semantic_search_service.py | ✅ DONE | Search with LLM answer generation |
 | Add Semantic Search tab to Research page | ✅ DONE | Full UI with filters |
 
-### 2.2 Remaining Phase 2 Tasks
+### 2.2 News Digest Service
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Implement weekly news digest automation | ⏳ PENDING | |
+| Add feedparser + httpx dependencies | ✅ DONE | RSS parsing + web requests |
+| Create src/services/news_service.py | ✅ DONE | RSS feeds, web search, LLM summarization |
+| Create scripts/generate_news_digest.py | ✅ DONE | CLI digest generator |
+| Create streamlit_app/pages/7_📰_News.py | ✅ DONE | Full news UI with digest, search |
+
+### 2.3 Remaining Phase 2 Tasks
+
+| Task | Status | Notes |
+|------|--------|-------|
 | Add data export to Excel/PDF | ⏳ PENDING | |
 | Implement multi-user authentication | ⏳ PENDING | |
 | Deploy to Streamlit Cloud or Docker | ⏳ PENDING | |
