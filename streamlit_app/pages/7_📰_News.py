@@ -21,6 +21,7 @@ try:
     # Get Ollama settings
     ollama_model = st.session_state.get("llm_model", "qwen3:8b")
     ollama_url = st.session_state.get("ollama_base_url", "http://localhost:11434")
+    tavily_api_key = st.session_state.get("tavily_api_key", "")
     
     # Tabs
     tab1, tab2, tab3 = st.tabs(["📰 Generate Digest", "📚 Saved Digests", "🔍 Search News"])
@@ -51,7 +52,7 @@ try:
                             st.warning(f"LLM not available: {e}")
                     
                     # Create service and generate digest
-                    news_service = get_news_service(llm=llm)
+                    news_service = get_news_service(llm=llm, tavily_api_key=tavily_api_key or None)
                     
                     with st.status("Generating digest...", expanded=True) as status:
                         st.write("📡 Fetching RSS feeds...")
@@ -187,25 +188,30 @@ try:
         
         if st.button("🔍 Search", type="primary", key="search_news_btn"):
             if search_query:
-                with st.spinner("Searching..."):
-                    try:
-                        news_service = get_news_service()
-                        articles = news_service.search_news(search_query, max_results=15)
-                        
-                        if articles:
-                            st.success(f"Found {len(articles)} results")
-                            
-                            for article in articles:
-                                relevance_icon = {"high": "🔴", "medium": "🟡", "low": "⚪"}[article.relevance]
-                                with st.expander(f"{relevance_icon} {article.title}", expanded=False):
-                                    st.markdown(f"**Source:** {article.source}")
-                                    if article.tags:
-                                        st.markdown(f"**Tags:** {', '.join(article.tags)}")
-                                    st.link_button("🔗 Open", article.url)
-                        else:
-                            st.warning("No results found. Try different keywords.")
-                    except Exception as e:
-                        st.error(f"Search failed: {e}")
+                if not tavily_api_key:
+                    st.warning("⚠️ Tavily API key not configured. Go to Settings to add your API key.")
+                else:
+                    with st.spinner("Searching with Tavily..."):
+                        try:
+                            news_service = get_news_service(tavily_api_key=tavily_api_key)
+                            articles = news_service.search_news(search_query, max_results=15)
+
+                            if articles:
+                                st.success(f"Found {len(articles)} results")
+
+                                for article in articles:
+                                    relevance_icon = {"high": "🔴", "medium": "🟡", "low": "⚪"}[article.relevance]
+                                    with st.expander(f"{relevance_icon} {article.title}", expanded=False):
+                                        st.markdown(f"**Source:** {article.source}")
+                                        if article.tags:
+                                            st.markdown(f"**Tags:** {', '.join(article.tags)}")
+                                        if article.summary:
+                                            st.markdown(f"**Summary:** {article.summary[:300]}...")
+                                        st.link_button("🔗 Open", article.url)
+                            else:
+                                st.warning("No results found. Try different keywords.")
+                        except Exception as e:
+                            st.error(f"Search failed: {e}")
             else:
                 st.warning("Please enter a search query.")
 

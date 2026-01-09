@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 
 import httpx
 import feedparser
+from tavily import TavilyClient
 from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -134,10 +135,15 @@ class NewsService:
         self,
         llm: Optional[ChatOllama] = None,
         cache_dir: str = "research/news_cache",
+        tavily_api_key: Optional[str] = None,
     ):
         self.llm = llm
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self.tavily_api_key = tavily_api_key
+        self.tavily_client: Optional[TavilyClient] = None
+        if tavily_api_key:
+            self.tavily_client = TavilyClient(api_key=tavily_api_key)
     
     def fetch_rss_articles(self, max_age_days: int = 7) -> list[NewsArticle]:
         """Fetch articles from RSS feeds."""
@@ -180,68 +186,51 @@ class NewsService:
         return articles
     
     def search_news(self, query: str, max_results: int = 10) -> list[NewsArticle]:
-        """Search for news using web search (via DuckDuckGo)."""
+        """Search for news using Tavily web search API."""
         articles = []
-        
+
+        if not self.tavily_client:
+            print("Tavily API key not configured. Skipping web search.")
+            return articles
+
         try:
-            # Use DuckDuckGo HTML search
-            search_url = "https://html.duckduckgo.com/html/"
-            params = {"q": f"{query} fusion energy news", "t": "h_"}
-            
-            with httpx.Client(timeout=10.0) as client:
-                response = client.post(search_url, data=params)
-                
-                if response.status_code == 200:
-                    # Simple parsing of DuckDuckGo results
-                    from html.parser import HTMLParser
-                    
-                    class DDGParser(HTMLParser):
-                        def __init__(self):
-                            super().__init__()
-                            self.results = []
-                            self.in_result = False
-                            self.current_title = ""
-                            self.current_url = ""
-                            self.current_snippet = ""
-                        
-                        def handle_starttag(self, tag, attrs):
-                            attrs_dict = dict(attrs)
-                            if tag == "a" and "result__a" in attrs_dict.get("class", ""):
-                                self.in_result = True
-                                self.current_url = attrs_dict.get("href", "")
-                        
-                        def handle_data(self, data):
-                            if self.in_result:
-                                self.current_title = data.strip()
-                        
-                        def handle_endtag(self, tag):
-                            if tag == "a" and self.in_result:
-                                if self.current_title and self.current_url:
-                                    self.results.append({
-                                        "title": self.current_title,
-                                        "url": self.current_url,
-                                    })
-                                self.in_result = False
-                                self.current_title = ""
-                                self.current_url = ""
-                    
-                    parser = DDGParser()
-                    parser.feed(response.text)
-                    
-                    for result in parser.results[:max_results]:
-                        article = NewsArticle(
-                            title=result["title"],
-                            url=result["url"],
-                            source="Web Search",
-                            published=datetime.now(),
+            # Use Tavily to search for fusion energy news
+            search_query = f"{query} fusion energy"
+            response = self.tavily_client.search(
+                query=search_query,
+                search_depth="advanced",
+                topic="news",
+                max_results=max_results,
+                include_answer=False,
+            )
+
+            for result in response.get("results", []):
+                # Parse published date if available
+                published = None
+                if result.get("published_date"):
+                    try:
+                        published = datetime.fromisoformat(
+                            result["published_date"].replace("Z", "+00:00")
                         )
-                        article.relevance = self._score_relevance(article)
-                        article.tags = self._extract_tags(article)
-                        articles.append(article)
-                        
+                    except (ValueError, TypeError):
+                        published = datetime.now()
+                else:
+                    published = datetime.now()
+
+                article = NewsArticle(
+                    title=result.get("title", "No title"),
+                    url=result.get("url", ""),
+                    source=result.get("source", "Tavily Search"),
+                    published=published,
+                    summary=result.get("content", ""),
+                )
+                article.relevance = self._score_relevance(article)
+                article.tags = self._extract_tags(article)
+                articles.append(article)
+
         except Exception as e:
-            print(f"Search error: {e}")
-        
+            print(f"Tavily search error: {e}")
+
         return articles
     
     def _score_relevance(self, article: NewsArticle) -> str:
@@ -428,6 +417,7 @@ Executive Summary:"""),
 def get_news_service(
     llm: Optional[ChatOllama] = None,
     cache_dir: str = "research/news_cache",
+    tavily_api_key: Optional[str] = None,
 ) -> NewsService:
     """Get news service instance."""
-    return NewsService(llm=llm, cache_dir=cache_dir)
+    return NewsService(llm=llm, cache_dir=cache_dir, tavily_api_key=tavily_api_key)

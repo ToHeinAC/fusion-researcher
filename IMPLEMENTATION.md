@@ -147,7 +147,17 @@ The MVP implementation is complete with all core features:
 | Create scripts/generate_news_digest.py | ✅ DONE | CLI digest generator |
 | Create streamlit_app/pages/7_📰_News.py | ✅ DONE | Full news UI with digest, search |
 
-### 2.3 Remaining Phase 2 Tasks
+### 2.3 Tavily Web Search Integration
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Add tavily-python dependency | ✅ DONE | v0.7.17 installed |
+| Add TAVILY_API_KEY to config | ✅ DONE | .env.example and config.py updated |
+| Update NewsService with Tavily | ✅ DONE | Replaced DuckDuckGo with Tavily API |
+| Add Tavily settings to Settings page | ✅ DONE | API key input + test button |
+| Update News page with Tavily | ✅ DONE | Search uses Tavily when key configured |
+
+### 2.4 Remaining Phase 2 Tasks
 
 | Task | Status | Notes |
 |------|--------|-------|

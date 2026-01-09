@@ -76,6 +76,41 @@ with col2:
 
 st.markdown("---")
 
+# Tavily API Configuration
+st.markdown("### 🔍 Tavily Web Search API")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("**API Key**")
+    tavily_key = st.text_input(
+        "Tavily API Key:",
+        value=st.session_state.get("tavily_api_key", ""),
+        type="password",
+        help="Get your API key at https://tavily.com",
+    )
+    st.session_state.tavily_api_key = tavily_key
+
+with col2:
+    st.markdown("**Test Connection**")
+    if st.button("🔌 Test Tavily API"):
+        if tavily_key:
+            try:
+                from tavily import TavilyClient
+                client = TavilyClient(api_key=tavily_key)
+                result = client.search("fusion energy", max_results=1)
+                if result.get("results"):
+                    st.success("✅ Tavily API connected!")
+                    st.info(f"Test result: {result['results'][0]['title'][:50]}...")
+                else:
+                    st.warning("Connected but no results returned")
+            except Exception as e:
+                st.error(f"API test failed: {e}")
+        else:
+            st.warning("Please enter a Tavily API key first")
+
+st.markdown("---")
+
 # Database Status
 st.markdown("### 🗄️ Database Status")
 

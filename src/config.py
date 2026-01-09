@@ -8,12 +8,16 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
-    
+
     # LLM Configuration
-    openai_api_key: str = Field(..., alias="OPENAI_API_KEY")
-    llm_model: str = Field(default="gpt-4", alias="LLM_MODEL")
+    openai_api_key: Optional[str] = Field(default=None, alias="OPENAI_API_KEY")
+    ollama_base_url: str = Field(default="http://localhost:11434", alias="OLLAMA_BASE_URL")
+    llm_model: str = Field(default="qwen3:8b", alias="LLM_MODEL")
     llm_temperature: float = Field(default=0.3, alias="LLM_TEMPERATURE")
     max_response_tokens: int = Field(default=2000, alias="MAX_RESPONSE_TOKENS")
+
+    # Tavily Web Search
+    tavily_api_key: Optional[str] = Field(default=None, alias="TAVILY_API_KEY")
     
     # Database
     database_path: str = Field(default="research/fusion_research.db", alias="DATABASE_PATH")

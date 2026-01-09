@@ -32,6 +32,7 @@ dependencies = [
     "langchain-ollama>=1.0.1",
     "langchain-chroma>=1.1.0",
     "feedparser>=6.0.12",
+    "tavily-python>=0.3.0",
 ]
 
 [project.optional-dependencies]
