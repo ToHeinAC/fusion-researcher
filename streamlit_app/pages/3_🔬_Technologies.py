@@ -75,8 +75,8 @@ try:
             {
                 "Technology": t["approach"],
                 "Companies": t["company_count"],
-                "Avg TRL": t["avg_trl"],
-                "Max TRL": t["max_trl"],
+                "Avg TRL": f"{t['avg_trl']:.1f}" if t["avg_trl"] is not None else "N/A",
+                "Max TRL": str(t["max_trl"]) if t["max_trl"] is not None else "N/A",
                 "Total Funding": f"${t['total_funding'] / 1e9:.2f}B" if t["total_funding"] else "N/A",
                 "Avg Funding": f"${t['avg_funding'] / 1e6:.1f}M" if t["avg_funding"] else "N/A",
             }
@@ -122,7 +122,7 @@ try:
                     {
                         "Company": d["company"],
                         "Technology": d["technology"],
-                        "TRL": d["trl"],
+                        "TRL": str(d["trl"]) if d["trl"] is not None else "N/A",
                         "Funding": f"${d['funding']/1e6:.1f}M" if d["funding"] else "N/A",
                         "Country": d["country"],
                     }

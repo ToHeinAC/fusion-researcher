@@ -30,6 +30,7 @@ class ChangeSource(str, Enum):
     AUTO_UPDATE = "auto_update"
     IMPORT = "import"
     USER_EDIT = "user_edit"
+    MARKDOWN_SYNC = "markdown_sync"
 
 
 class SourceReliability(Enum):

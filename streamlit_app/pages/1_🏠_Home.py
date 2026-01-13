@@ -134,7 +134,7 @@ try:
                 "Company": c.name,
                 "Country": c.country,
                 "Technology": c.technology_approach or "N/A",
-                "TRL": c.trl or "N/A",
+                "TRL": str(c.trl) if c.trl is not None else "N/A",
                 "Funding": c.funding_display,
             }
             for c in top_companies

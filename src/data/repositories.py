@@ -68,10 +68,20 @@ class CompanyRepository:
         if technology:
             conditions.append("technology_approach = ?")
             params.append(technology)
-        if trl_min is not None:
+        if trl_min is not None and trl_max is not None:
+            # Include companies with NULL TRL when full range (1-9) is selected
+            if trl_min == 1 and trl_max == 9:
+                conditions.append("(trl IS NULL OR (trl >= ? AND trl <= ?))")
+                params.extend([trl_min, trl_max])
+            else:
+                conditions.append("trl >= ?")
+                params.append(trl_min)
+                conditions.append("trl <= ?")
+                params.append(trl_max)
+        elif trl_min is not None:
             conditions.append("trl >= ?")
             params.append(trl_min)
-        if trl_max is not None:
+        elif trl_max is not None:
             conditions.append("trl <= ?")
             params.append(trl_max)
         if funding_min is not None:
