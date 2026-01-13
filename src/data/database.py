@@ -224,6 +224,39 @@ class Database:
             FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
         );
         
+        -- Update proposals table (LLM-suggested data changes)
+        CREATE TABLE IF NOT EXISTS update_proposals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            entity_type TEXT NOT NULL,
+            entity_id INTEGER NOT NULL,
+            field_name TEXT NOT NULL,
+            old_value TEXT,
+            new_value TEXT,
+            confidence_score REAL,
+            sources TEXT,
+            search_query TEXT,
+            extracted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            status TEXT DEFAULT 'pending',
+            reviewed_by TEXT,
+            reviewed_at TIMESTAMP,
+            notes TEXT
+        );
+
+        -- Audit log table (track all data changes)
+        CREATE TABLE IF NOT EXISTS audit_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            entity_type TEXT NOT NULL,
+            entity_id INTEGER NOT NULL,
+            field_name TEXT NOT NULL,
+            old_value TEXT,
+            new_value TEXT,
+            change_source TEXT,
+            changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            changed_by TEXT,
+            proposal_id INTEGER,
+            FOREIGN KEY (proposal_id) REFERENCES update_proposals(id)
+        );
+
         -- Create indexes for common queries
         CREATE INDEX IF NOT EXISTS idx_companies_country ON companies(country);
         CREATE INDEX IF NOT EXISTS idx_companies_technology ON companies(technology_approach);
@@ -234,6 +267,9 @@ class Database:
         CREATE INDEX IF NOT EXISTS idx_technologies_company ON technologies(company_id);
         CREATE INDEX IF NOT EXISTS idx_partnerships_company ON partnerships(company_id_a);
         CREATE INDEX IF NOT EXISTS idx_markets_region ON markets(region);
+        CREATE INDEX IF NOT EXISTS idx_proposals_status ON update_proposals(status);
+        CREATE INDEX IF NOT EXISTS idx_proposals_entity ON update_proposals(entity_type, entity_id);
+        CREATE INDEX IF NOT EXISTS idx_audit_entity ON audit_log(entity_type, entity_id);
         """
         
         self.connection.executescript(schema_sql)
