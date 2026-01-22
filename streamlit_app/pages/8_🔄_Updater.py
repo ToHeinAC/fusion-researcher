@@ -203,7 +203,7 @@ try:
             st.markdown(f"**{len(proposals)} pending proposals**")
 
             # Bulk actions
-            col1, col2, col3 = st.columns([1, 1, 2])
+            col1, col2, col3 = st.columns([1, 1, 1])
             with col1:
                 if st.button("✅ Approve All High Confidence", key="approve_all_high"):
                     approved = updater.auto_apply_high_confidence(threshold=config.auto_apply_threshold)
@@ -211,6 +211,12 @@ try:
                     st.rerun()
 
             with col2:
+                if st.button("🗑️ Remove All Pending", key="remove_all_pending"):
+                    deleted = updater.delete_all_pending_proposals()
+                    st.success(f"Removed {deleted} pending proposals")
+                    st.rerun()
+
+            with col3:
                 if st.button("🔄 Refresh", key="refresh_proposals"):
                     st.rerun()
 

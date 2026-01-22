@@ -41,23 +41,23 @@ def populate_technologies(vector_store, db):
     """Populate vector store with technology data."""
     repo = TechnologyRepository(db)
     technologies = repo.get_all(limit=100)
-    
+
     count = 0
     for tech in technologies:
         try:
             vector_store.add_technology(
                 tech_id=tech.id,
-                name=tech.name,
+                name=tech.name or f"Technology {tech.id}",
                 approach=tech.approach.value if tech.approach else "Unknown",
                 description=tech.description or "",
-                trl_range=f"{tech.trl_min}-{tech.trl_max}" if tech.trl_min and tech.trl_max else "",
-                challenges=tech.challenges or "",
+                trl_range=str(tech.trl) if tech.trl else "",
+                challenges=tech.key_challenges or "",
             )
             count += 1
             print(f"  Added technology: {tech.name}")
         except Exception as e:
             print(f"  Error adding {tech.name}: {e}")
-    
+
     return count
 
 

@@ -453,6 +453,23 @@ Extract the {field_name} value. Respond with ONLY the extracted value or "NOT_FO
             print(f"Error rejecting proposal: {e}")
             return False
 
+    def delete_all_pending_proposals(self) -> int:
+        """Delete all pending proposals from the database."""
+        try:
+            cursor = self.db.execute(
+                "SELECT COUNT(*) as count FROM update_proposals WHERE status = 'pending'"
+            )
+            count = cursor.fetchone()["count"]
+
+            self.db.execute(
+                "DELETE FROM update_proposals WHERE status = 'pending'"
+            )
+            self.db.commit()
+            return count
+        except Exception as e:
+            print(f"Error deleting pending proposals: {e}")
+            return 0
+
     def auto_apply_high_confidence(
         self, threshold: Optional[float] = None
     ) -> int:

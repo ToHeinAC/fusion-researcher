@@ -231,12 +231,20 @@ class VectorStore:
     
     def clear(self):
         """Clear all documents from the collection."""
+        global _vector_store
         self.vectorstore.delete_collection()
         self._vectorstore = None
+        _vector_store = None  # Reset singleton so next get_vector_store() creates fresh instance
 
 
 # Singleton instance
 _vector_store: Optional[VectorStore] = None
+
+
+def reset_vector_store():
+    """Reset the singleton vector store instance."""
+    global _vector_store
+    _vector_store = None
 
 
 def get_vector_store(

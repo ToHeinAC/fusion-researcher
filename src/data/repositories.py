@@ -334,7 +334,15 @@ class TechnologyRepository:
             (company_id,)
         )
         return [self._row_to_technology(row) for row in cursor.fetchall()]
-    
+
+    def get_all(self, limit: int = 100) -> list[Technology]:
+        """Get all technologies."""
+        cursor = self.db.execute(
+            "SELECT * FROM technologies LIMIT ?",
+            (limit,)
+        )
+        return [self._row_to_technology(row) for row in cursor.fetchall()]
+
     def create(self, tech: Technology) -> int:
         """Create a new technology entry."""
         cursor = self.db.execute(
@@ -403,9 +411,9 @@ class MarketRepository:
     def __init__(self, db: Database):
         self.db = db
     
-    def get_all(self) -> list[Market]:
+    def get_all(self, limit: int = 100) -> list[Market]:
         """Get all markets."""
-        cursor = self.db.execute("SELECT * FROM markets ORDER BY region_name")
+        cursor = self.db.execute("SELECT * FROM markets ORDER BY region_name LIMIT ?", (limit,))
         return [self._row_to_market(row) for row in cursor.fetchall()]
     
     def get_by_region(self, region: str) -> Optional[Market]:
