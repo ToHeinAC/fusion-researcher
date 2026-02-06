@@ -16,10 +16,11 @@ This platform transforms static fusion research documentation into a dynamic, qu
 
 - **Python 3.11+** with **uv** package manager
 - **SQLite** database with SQLAlchemy 2.0+
-- **Streamlit 1.28+** for web UI (8 pages)
+- **Streamlit 1.28+** for web UI (9 pages)
 - **LangChain 0.1+** for LLM orchestration
 - **ChromaDB 0.4+** for semantic search
 - **Pydantic 2.0+** for data validation
+- **pyvis 0.3+** / **networkx 3.0+** for network visualization
 
 ## Directory Structure
 
@@ -44,11 +45,12 @@ src/
     ├── report_service.py       # Report generation
     ├── news_service.py         # RSS feeds, news summarization
     ├── semantic_search_service.py  # Semantic search
+    ├── network_service.py      # Investor/partner network (pyvis)
     └── updater_service.py      # LLM-powered database updates
 
 streamlit_app/
 ├── app.py              # Main entry point
-└── pages/              # 8 Streamlit pages (Home, Companies, Technologies, etc.)
+└── pages/              # 9 Streamlit pages (Home, Companies, Technologies, Network, etc.)
 
 scripts/                # CLI utilities (init_db, populate, etc.)
 tests/                  # pytest test suite
@@ -126,3 +128,4 @@ Primary data comes from `Fusion_Research.md` (146KB German-language fusion marke
 3. **German Language**: Source data is in German; app handles German queries
 4. **Audit Trail**: All database updates are logged for compliance
 5. **Confidence Scoring**: Data updates include confidence levels (0.0-1.0)
+6. **Network Visualization**: Interactive pyvis graph showing company-investor-partner relationships parsed from database text fields

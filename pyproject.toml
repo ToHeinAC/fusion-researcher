@@ -33,6 +33,8 @@ dependencies = [
     "langchain-chroma>=1.1.0",
     "feedparser>=6.0.12",
     "tavily-python>=0.3.0",
+    "pyvis>=0.3.2",
+    "networkx>=3.0",
 ]
 
 [project.optional-dependencies]
