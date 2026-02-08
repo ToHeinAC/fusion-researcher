@@ -1,9 +1,9 @@
 # Product Requirements Document: Fusion Research Intelligence Platform
 
-**Version:** 1.0  
-**Date:** January 9, 2026  
-**Author:** Research & Development Team  
-**Status:** DRAFT
+**Version:** 1.1
+**Date:** February 7, 2026
+**Author:** Research & Development Team
+**Status:** IN PROGRESS
 
 ---
 
@@ -125,8 +125,12 @@ The **Fusion Research Intelligence Platform** is a specialized web application d
   - **Companies:** Searchable company database with filters, detail pages
   - **Technologies:** TRL matrix, technology comparison, development trends
   - **Markets:** Geographic analysis, investment flows by region
-  - **Research:** Query interface, report generation, news feed
+  - **Research:** Query interface, report generation
   - **Settings:** Data refresh status, configuration (API keys, data sources)
+  - **News:** RSS feeds, Tavily web search, LLM-powered news digests
+  - **Updater:** LLM-powered database update proposals with confidence scoring
+  - **Network:** Interactive pyvis graph of company-investor-partner relationships
+  - **Editor:** Dynamic CRUD forms for all entity types with audit logging
 - Responsive design (mobile-friendly via Streamlit responsive containers)
 - Real-time update indicators (last DB refresh, data currency status)
 
@@ -472,6 +476,7 @@ fusion-research-platform/
 │   │   ├── repositories.py          # Repository pattern implementations
 │   │   ├── parsers/
 │   │   │   ├── markdown_parser.py   # Fusion_Research.md → Entities
+│   │   │   ├── relationship_parser.py  # Extract investors/partners/collaborations
 │   │   │   ├── csv_parser.py
 │   │   │   └── json_parser.py
 │   │   └── ingestion_service.py     # Data import orchestration
@@ -489,7 +494,14 @@ fusion-research-platform/
 │   │   ├── market_service.py        # Market analysis
 │   │   ├── technology_service.py    # Technology TRL analysis
 │   │   ├── report_service.py        # Report generation
-│   │   └── news_service.py          # News ingestion + summarization
+│   │   ├── news_service.py          # News ingestion + summarization
+│   │   ├── semantic_search_service.py  # ChromaDB semantic search
+│   │   ├── network_service.py       # Investor/partner network (pyvis)
+│   │   ├── updater_service.py       # LLM-powered database updates
+│   │   ├── audit_service.py         # Audit logging for data changes
+│   │   ├── crud_service.py          # Unified CRUD for all entity types
+│   │   ├── markdown_merger_service.py  # LLM-powered markdown merge
+│   │   └── database_sync_service.py # Sync database from merged markdown
 │   │
 │   ├── utils/
 │   │   ├── __init__.py
@@ -512,7 +524,11 @@ fusion-research-platform/
 │   │   ├── 3_🔬_technologies.py     # Technology analysis
 │   │   ├── 4_📊_markets.py          # Market intelligence
 │   │   ├── 5_📝_research.py         # Query interface & reports
-│   │   └── 6_⚙️_settings.py         # Configuration
+│   │   ├── 6_⚙️_settings.py         # Configuration
+│   │   ├── 7_📰_News.py             # News digests & search
+│   │   ├── 8_🔄_Updater.py          # LLM-powered update proposals
+│   │   ├── 9_🔗_Network.py          # Interactive network graph
+│   │   └── 10_✏️_Editor.py          # CRUD editor for all entities
 │   └── secrets.toml                 # Streamlit secrets (git-ignored)
 │
 ├── tests/
@@ -534,14 +550,12 @@ fusion-research-platform/
 ├── scripts/
 │   ├── init_db.py                   # Initialize database schema
 │   ├── populate_sample_data.py      # Load Fusion_Research.md
-│   ├── migrate_db.py                # Schema migrations
-│   └── backup_db.sh                 # Database backup
-│
-├── docs/
-│   ├── ARCHITECTURE.md              # System design
-│   ├── DATABASE_SCHEMA.md           # DB structure
-│   ├── API_REFERENCE.md             # Future API endpoints
-│   └── DEPLOYMENT.md                # Production deployment
+│   ├── populate_vector_store.py     # Build ChromaDB vector store
+│   ├── normalize_relationships.py   # Populate normalized relationship tables
+│   ├── generate_news_digest.py      # CLI news digest generator
+│   ├── merge_research_updates.py    # Merge research update documents
+│   ├── sync_database_from_markdown.py # Sync DB from merged markdown
+│   └── run_full_update_pipeline.py  # Full update pipeline orchestration
 │
 ├── pyproject.toml                   # uv + pip config
 ├── uv.lock                          # uv dependency lock
@@ -1381,6 +1395,35 @@ CREATE TABLE markets (
     cagr_percent REAL,
     regulatory_environment TEXT
 );
+
+-- Investors (normalized)
+CREATE TABLE investors (
+    id INTEGER PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL,
+    investor_type TEXT,  -- 'VC', 'Corporate', 'Government', 'Family Office'
+    country TEXT,
+    description TEXT
+);
+
+-- Collaborations (normalized)
+CREATE TABLE collaborations (
+    id INTEGER PRIMARY KEY,
+    company_id INTEGER NOT NULL,
+    partner_name TEXT NOT NULL,
+    collaboration_type TEXT,  -- 'Research', 'Technology', 'Supply Chain'
+    description TEXT,
+    FOREIGN KEY(company_id) REFERENCES companies(id)
+);
+
+-- Funding-Investor junction table
+CREATE TABLE funding_investors (
+    id INTEGER PRIMARY KEY,
+    funding_round_id INTEGER NOT NULL,
+    investor_id INTEGER NOT NULL,
+    is_lead INTEGER DEFAULT 0,
+    FOREIGN KEY(funding_round_id) REFERENCES funding_rounds(id),
+    FOREIGN KEY(investor_id) REFERENCES investors(id)
+);
 ```
 
 ---
@@ -1415,6 +1458,82 @@ CREATE TABLE markets (
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** January 9, 2026  
-**Next Review:** January 16, 2026 (post-feedback)
+**Document Version:** 1.1
+**Last Updated:** February 7, 2026
+
+## Appendix D: Interconnections
+
+### Network JSON for Python Visualization
+
+The supply chain network has been exported as `fusion_smr_network.json` with the following structure:
+
+```json
+{
+  "metadata": {
+    "title": "Fusion & SMR Industry Supply Chain Network",
+    "source": "binding.energy 2026 Conference",
+    "last_updated": "2026-02-06"
+  },
+  "nodes": [
+    {
+      "id": "marvel_fusion",
+      "label": "Marvel Fusion",
+      "type": "fusion_company",
+      "country": "DE",
+      "technology": "ICF_laser",
+      "funding_eur_m": 385
+    }
+    // ... 74 more nodes
+  ],
+  "edges": [
+    {
+      "source": "marvel_fusion",
+      "target": "siemens_energy",
+      "type": "technology_partner",
+      "since": 2022
+    }
+    // ... 75 more edges
+  ]
+}
+```
+
+**Node Types:**
+- `fusion_company`, `smr_company`, `transmutation_company`
+- `industrial_partner`, `research_institution`
+- `investor`, `government`, `funding_program`
+- `utility`, `consulting`, `site`, `fuel_company`
+
+**Edge Types:**
+- `investor`, `technology_partner`, `academic_partner`
+- `spin_out`, `funding`, `supply_chain`
+- `joint_venture`, `mou_partner`, `site_partner`
+
+### Python Visualization Code
+
+```python
+import networkx as nx
+import json
+
+# Load network data
+with open("fusion_smr_network.json", "r") as f:
+    data = json.load(f)
+
+# Create NetworkX graph
+G = nx.Graph()
+
+# Add nodes with attributes
+for node in data["nodes"]:
+    G.add_node(node["id"], **node)
+
+# Add edges with attributes
+for edge in data["edges"]:
+    G.add_edge(edge["source"], edge["target"], **edge)
+
+# Visualization with pyvis or matplotlib
+from pyvis.network import Network
+net = Network(height="800px", width="100%", notebook=True)
+net.from_nx(G)
+net.show("fusion_network.html")
+```
+
+---

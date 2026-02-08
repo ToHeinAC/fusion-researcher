@@ -16,7 +16,7 @@ This platform transforms static fusion research documentation into a dynamic, qu
 
 - **Python 3.11+** with **uv** package manager
 - **SQLite** database with SQLAlchemy 2.0+
-- **Streamlit 1.28+** for web UI (9 pages)
+- **Streamlit 1.28+** for web UI (10 pages)
 - **LangChain 0.1+** for LLM orchestration
 - **ChromaDB 0.4+** for semantic search
 - **Pydantic 2.0+** for data validation
@@ -32,7 +32,9 @@ src/
 │   ├── database.py     # SQLite connection and schema
 │   ├── repositories.py # Repository pattern for DB access
 │   ├── vector_store.py # ChromaDB wrapper
-│   └── parsers/        # Markdown parser for Fusion_Research.md
+│   └── parsers/
+│       ├── markdown_parser.py    # Parse Fusion_Research.md → entities
+│       └── relationship_parser.py # Extract investors/partners/collaborations
 ├── llm/
 │   ├── chain_factory.py    # LangChain setup
 │   ├── query_processor.py  # NL → SQL translation
@@ -45,12 +47,16 @@ src/
     ├── report_service.py       # Report generation
     ├── news_service.py         # RSS feeds, news summarization
     ├── semantic_search_service.py  # Semantic search
-    ├── network_service.py      # Investor/partner network (pyvis)
-    └── updater_service.py      # LLM-powered database updates
+    ├── network_service.py      # Investor/partner network (pyvis, normalized tables with text-field fallback)
+    ├── updater_service.py      # LLM-powered database updates (delegates to AuditService)
+    ├── audit_service.py        # Audit logging for all data changes
+    ├── crud_service.py         # Unified CRUD for all entity types with Pydantic validation
+    ├── markdown_merger_service.py  # LLM-powered markdown merge
+    └── database_sync_service.py   # Sync database from merged markdown
 
 streamlit_app/
 ├── app.py              # Main entry point
-└── pages/              # 9 Streamlit pages (Home, Companies, Technologies, Network, etc.)
+└── pages/              # 10 Streamlit pages (Home, Companies, Technologies, Markets, Research, Settings, News, Updater, Network, Editor)
 
 scripts/                # CLI utilities (init_db, populate, etc.)
 tests/                  # pytest test suite
@@ -75,8 +81,14 @@ uv run python scripts/populate_sample_data.py
 # Build vector store for semantic search
 uv run python scripts/populate_vector_store.py
 
+# Normalize relationships (investors, partnerships, collaborations)
+uv run python scripts/normalize_relationships.py
+
 # Generate news digest
 uv run python scripts/generate_news_digest.py
+
+# Full update pipeline (merge updates + sync DB)
+uv run python scripts/run_full_update_pipeline.py
 
 # Run tests
 uv run pytest tests/
@@ -93,7 +105,7 @@ uv run black src/
 
 ## Database Schema
 
-Core tables: `companies`, `funding_rounds`, `investors`, `technologies`, `markets`, `partnerships`, `update_proposals`, `audit_log`
+Core tables: `companies`, `funding_rounds`, `investors`, `technologies`, `markets`, `partnerships`, `collaborations`, `funding_investors`, `update_proposals`, `audit_log`
 
 The database is SQLite stored at `research/fusion_research.db`.
 
@@ -128,4 +140,4 @@ Primary data comes from `Fusion_Research.md` (146KB German-language fusion marke
 3. **German Language**: Source data is in German; app handles German queries
 4. **Audit Trail**: All database updates are logged for compliance
 5. **Confidence Scoring**: Data updates include confidence levels (0.0-1.0)
-6. **Network Visualization**: Interactive pyvis graph showing company-investor-partner relationships parsed from database text fields
+6. **Network Visualization**: Interactive pyvis graph showing company-investor-partner relationships from normalized relationship tables (investors, partnerships, collaborations) with text-field fallback

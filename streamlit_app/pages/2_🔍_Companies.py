@@ -89,10 +89,17 @@ try:
         if company:
             colors = get_tech_color(company.technology_approach)
 
-            # Back button at top
-            if st.button("← Back to List"):
-                del st.session_state.selected_company_id
-                st.rerun()
+            # Back / Edit buttons at top
+            btn_col1, btn_col2 = st.columns([1, 1])
+            with btn_col1:
+                if st.button("← Back to List"):
+                    del st.session_state.selected_company_id
+                    st.rerun()
+            with btn_col2:
+                if st.button("✏️ Edit in Editor"):
+                    st.session_state.editor_mode = "edit"
+                    st.session_state.editor_edit_id = company.id
+                    st.switch_page("pages/10_✏️_Editor.py")
 
             # Header
             st.markdown(

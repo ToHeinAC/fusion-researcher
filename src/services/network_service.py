@@ -1,5 +1,6 @@
 """Network visualization service using database and pyvis."""
 
+import logging
 import re
 import tempfile
 from dataclasses import dataclass, field
@@ -10,6 +11,9 @@ import pandas as pd
 from pyvis.network import Network
 
 from src.data.database import Database, get_database
+from src.data.parsers.relationship_parser import classify_partner, parse_text_list
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -92,85 +96,131 @@ class NetworkService:
 
     def _parse_text_list(self, text: str | None) -> list[str]:
         """Parse comma/semicolon separated text into list of names."""
-        if not text:
-            return []
-
-        # Split on comma or semicolon
-        items = re.split(r"[,;]", text)
-
-        result = []
-        for item in items:
-            # Clean up the item
-            item = item.strip()
-            # Remove trailing citations like [16]
-            item = re.sub(r"\[\d+\]$", "", item).strip()
-            # Remove parenthetical notes like (Berlin), (London)
-            item = re.sub(r"\s*\([^)]+\)\s*$", "", item).strip()
-
-            if item and len(item) > 1:
-                result.append(item)
-
-        return result
+        return parse_text_list(text)
 
     def _classify_partner(self, partner_name: str) -> str:
         """Classify partner type based on name patterns."""
-        name_lower = partner_name.lower()
+        return classify_partner(partner_name)
 
-        # Research/academic indicators
-        academic_keywords = [
-            "university",
-            "universität",
-            "college",
-            "institute",
-            "institut",
-            "lab",
-            "laboratory",
-            "research",
-            "national",
-            "department of energy",
-            "doe",
-            "cnrs",
-            "max planck",
-            "fraunhofer",
-            "lmu",
-            "mit",
-            "princeton",
-            "oxford",
-            "cambridge",
-            "stanford",
-            "berkeley",
-            "caltech",
-        ]
+    def _load_from_normalized_tables(self, nodes, edges):
+        """Load relationships from normalized tables. Returns True if data found."""
+        found_data = False
 
-        # Government indicators
-        government_keywords = [
-            "government",
-            "ministry",
-            "department",
-            "agency",
-            "commission",
-            "u.s.",
-            "us ",
-            "european",
-            "federal",
-            "state of",
-            "dod",
-            "arpa",
-            "darpa",
-        ]
+        # Investors via funding_investors join
+        inv_cursor = self._db.execute(
+            """SELECT DISTINCT i.id, i.name, i.country, fr.company_id
+               FROM investors i
+               JOIN funding_investors fi ON fi.investor_id = i.id
+               JOIN funding_rounds fr ON fr.id = fi.funding_id"""
+        )
+        for row in inv_cursor.fetchall():
+            found_data = True
+            investor_id = f"investor_{row['id']}"
+            company_id = f"company_{row['company_id']}"
 
-        for kw in academic_keywords:
-            if kw in name_lower:
-                return "research_partner"
+            if investor_id not in nodes:
+                nodes[investor_id] = NetworkNode(
+                    id=investor_id,
+                    label=row["name"],
+                    type="investor",
+                    country=row["country"] or "Unknown",
+                )
 
-        for kw in government_keywords:
-            if kw in name_lower:
-                return "government"
+            if company_id in nodes:
+                edges.append(
+                    NetworkEdge(source=investor_id, target=company_id, type="investor")
+                )
 
-        return "industrial_partner"
+        # Partnerships
+        part_cursor = self._db.execute(
+            "SELECT id, company_id_a, partner_name, partner_type FROM partnerships"
+        )
+        for row in part_cursor.fetchall():
+            found_data = True
+            company_id = f"company_{row['company_id_a']}"
+            partner_name = row["partner_name"] or f"partner_{row['id']}"
+            partner_id = f"partner_{partner_name.lower().replace(' ', '_')}"
+            partner_type = self._classify_partner(partner_name)
+
+            if partner_id not in nodes:
+                nodes[partner_id] = NetworkNode(
+                    id=partner_id,
+                    label=partner_name,
+                    type=partner_type,
+                    country="Unknown",
+                )
+
+            if company_id in nodes:
+                edge_type = "academic_partner" if partner_type == "research_partner" else "strategic_partner"
+                edges.append(
+                    NetworkEdge(source=company_id, target=partner_id, type=edge_type)
+                )
+
+        # Collaborations
+        collab_cursor = self._db.execute(
+            "SELECT id, company_id, institution_name, country FROM collaborations"
+        )
+        for row in collab_cursor.fetchall():
+            found_data = True
+            company_id = f"company_{row['company_id']}"
+            inst_name = row["institution_name"]
+            partner_id = f"partner_{inst_name.lower().replace(' ', '_')}"
+
+            if partner_id not in nodes:
+                nodes[partner_id] = NetworkNode(
+                    id=partner_id,
+                    label=inst_name,
+                    type="research_partner",
+                    country=row["country"] or "Unknown",
+                )
+
+            if company_id in nodes:
+                edges.append(
+                    NetworkEdge(source=company_id, target=partner_id, type="academic_partner")
+                )
+
+        return found_data
+
+    def _load_from_text_fields(self, nodes, edges):
+        """Fallback: load relationships from text fields on companies table."""
+        cursor = self._db.execute(
+            "SELECT id, key_investors, key_partnerships FROM companies"
+        )
+        for row in cursor.fetchall():
+            company_id = f"company_{row['id']}"
+
+            investors = self._parse_text_list(row["key_investors"])
+            for investor_name in investors:
+                investor_id = f"investor_{investor_name.lower().replace(' ', '_')}"
+                if investor_id not in nodes:
+                    nodes[investor_id] = NetworkNode(
+                        id=investor_id, label=investor_name,
+                        type="investor", country="Unknown",
+                    )
+                edges.append(
+                    NetworkEdge(source=investor_id, target=company_id, type="investor")
+                )
+
+            partners = self._parse_text_list(row["key_partnerships"])
+            for partner_name in partners:
+                partner_type = self._classify_partner(partner_name)
+                partner_id = f"partner_{partner_name.lower().replace(' ', '_')}"
+                if partner_id not in nodes:
+                    nodes[partner_id] = NetworkNode(
+                        id=partner_id, label=partner_name,
+                        type=partner_type, country="Unknown",
+                    )
+                edge_type = "academic_partner" if partner_type == "research_partner" else "strategic_partner"
+                edges.append(
+                    NetworkEdge(source=company_id, target=partner_id, type=edge_type)
+                )
 
     def load_network_from_db(self) -> NetworkData:
-        """Load network data from database."""
+        """Load network data from database.
+
+        Prefers normalized tables (investors, partnerships, collaborations).
+        Falls back to parsing text fields if normalized tables are empty.
+        """
         if self._network_data is not None:
             return self._network_data
 
@@ -179,21 +229,15 @@ class NetworkService:
 
         # Load companies as nodes
         cursor = self._db.execute(
-            """
-            SELECT id, name, country, technology_approach, total_funding_usd,
-                   key_investors, key_partnerships
-            FROM companies
-            """
+            """SELECT id, name, country, technology_approach, total_funding_usd
+               FROM companies"""
         )
 
         for row in cursor.fetchall():
-            company_name = row["name"]
             company_id = f"company_{row['id']}"
-
-            # Add company node
             nodes[company_id] = NetworkNode(
                 id=company_id,
-                label=company_name,
+                label=row["name"],
                 type="company",
                 country=row["country"] or "Unknown",
                 attributes={
@@ -206,53 +250,14 @@ class NetworkService:
                 },
             )
 
-            # Parse and add investors
-            investors = self._parse_text_list(row["key_investors"])
-            for investor_name in investors:
-                investor_id = f"investor_{investor_name.lower().replace(' ', '_')}"
-
-                if investor_id not in nodes:
-                    nodes[investor_id] = NetworkNode(
-                        id=investor_id,
-                        label=investor_name,
-                        type="investor",
-                        country="Unknown",
-                    )
-
-                edges.append(
-                    NetworkEdge(
-                        source=investor_id,
-                        target=company_id,
-                        type="investor",
-                    )
-                )
-
-            # Parse and add partners
-            partners = self._parse_text_list(row["key_partnerships"])
-            for partner_name in partners:
-                partner_type = self._classify_partner(partner_name)
-                partner_id = f"partner_{partner_name.lower().replace(' ', '_')}"
-
-                if partner_id not in nodes:
-                    nodes[partner_id] = NetworkNode(
-                        id=partner_id,
-                        label=partner_name,
-                        type=partner_type,
-                        country="Unknown",
-                    )
-
-                edge_type = (
-                    "academic_partner"
-                    if partner_type == "research_partner"
-                    else "strategic_partner"
-                )
-                edges.append(
-                    NetworkEdge(
-                        source=company_id,
-                        target=partner_id,
-                        type=edge_type,
-                    )
-                )
+        # Try normalized tables first
+        found = self._load_from_normalized_tables(nodes, edges)
+        if not found:
+            logger.warning(
+                "Normalized relationship tables are empty -- falling back to text field parsing. "
+                "Run scripts/normalize_relationships.py to populate them."
+            )
+            self._load_from_text_fields(nodes, edges)
 
         self._network_data = NetworkData(
             nodes=list(nodes.values()),

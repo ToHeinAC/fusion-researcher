@@ -12,6 +12,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 from src.data.database import get_database, Database
+from src.services.audit_service import AuditService
 from src.models.update_proposal import (
     UpdateProposal,
     AuditLogEntry,
@@ -65,6 +66,7 @@ class UpdaterService:
         self.config = config or UpdaterConfig()
         # Use provided database instance or get/create from path
         self.db = database if database else get_database(db_path)
+        self._audit = AuditService(self.db)
 
     def search_web(self, query: str, max_results: int = 5) -> list[DataSource]:
         """Search web for information using Tavily API."""
@@ -498,29 +500,8 @@ Extract the {field_name} value. Respond with ONLY the extracted value or "NOT_FO
         return applied_count
 
     def _save_audit_entry(self, entry: AuditLogEntry) -> int:
-        """Save an audit log entry."""
-        data = entry.to_db_dict()
-
-        cursor = self.db.execute(
-            """
-            INSERT INTO audit_log (
-                entity_type, entity_id, field_name, old_value, new_value,
-                change_source, changed_at, changed_by, proposal_id
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                data["entity_type"],
-                data["entity_id"],
-                data["field_name"],
-                data["old_value"],
-                data["new_value"],
-                data["change_source"],
-                data["changed_at"],
-                data["changed_by"],
-                data["proposal_id"],
-            ),
-        )
-        return cursor.lastrowid
+        """Save an audit log entry (delegates to AuditService)."""
+        return self._audit.save_entry(entry)
 
     def get_audit_log(
         self,
@@ -528,23 +509,8 @@ Extract the {field_name} value. Respond with ONLY the extracted value or "NOT_FO
         entity_id: Optional[int] = None,
         limit: int = 100,
     ) -> list[AuditLogEntry]:
-        """Get audit log entries."""
-        query = "SELECT * FROM audit_log WHERE 1=1"
-        params = []
-
-        if entity_type:
-            query += " AND entity_type = ?"
-            params.append(entity_type.value)
-
-        if entity_id:
-            query += " AND entity_id = ?"
-            params.append(entity_id)
-
-        query += " ORDER BY changed_at DESC LIMIT ?"
-        params.append(limit)
-
-        cursor = self.db.execute(query, tuple(params))
-        return [AuditLogEntry.from_db_row(dict(row)) for row in cursor.fetchall()]
+        """Get audit log entries (delegates to AuditService)."""
+        return self._audit.get_log(entity_type, entity_id, limit)
 
     def get_stale_companies(self, limit: int = 20) -> list[dict]:
         """Get companies that haven't been updated recently."""

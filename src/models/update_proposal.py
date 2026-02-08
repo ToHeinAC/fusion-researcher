@@ -22,6 +22,8 @@ class EntityType(str, Enum):
     TECHNOLOGY = "technology"
     MARKET = "market"
     PARTNERSHIP = "partnership"
+    INVESTOR = "investor"
+    COLLABORATION = "collaboration"
 
 
 class ChangeSource(str, Enum):

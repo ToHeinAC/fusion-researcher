@@ -110,6 +110,20 @@
 - Created initialization scripts (init_db.py, populate_sample_data.py)
 - Created test structure
 
+### Session 2 - February 2026
+- Added Updater page (page 8) with LLM-powered database update proposals
+- Added Network page (page 9) with pyvis interactive graph visualization
+- Normalized relationship tables (investors, partnerships, collaborations)
+- Created relationship_parser.py for extracting structured relationships from text fields
+- Created normalize_relationships.py script
+- Extracted AuditService from UpdaterService as standalone service
+- Created CrudService for unified CRUD across all entity types
+- Added Editor page (page 10) with dynamic Pydantic-based forms
+- Added edit links on Companies and Network pages
+- Updated EntityType enum with INVESTOR and COLLABORATION
+- Added InvestorRepository, CollaborationRepository, FundingInvestorRepository
+- NetworkService now queries normalized tables with text-field fallback
+
 ---
 
 ## MVP Status: ✅ COMPLETE
@@ -157,7 +171,29 @@ The MVP implementation is complete with all core features:
 | Add Tavily settings to Settings page | ✅ DONE | API key input + test button |
 | Update News page with Tavily | ✅ DONE | Search uses Tavily when key configured |
 
-### 2.4 Remaining Phase 2 Tasks
+### 2.4 Updater & Network UI
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Create streamlit_app/pages/8_🔄_Updater.py | ✅ DONE | LLM-powered update proposals |
+| Create streamlit_app/pages/9_🔗_Network.py | ✅ DONE | pyvis interactive graph |
+
+### 2.5 Normalized Relationships & CRUD Editor
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Create src/data/parsers/relationship_parser.py | ✅ DONE | Extract investors/partners/collaborations from text |
+| Add InvestorRepository, CollaborationRepository, FundingInvestorRepository | ✅ DONE | New repos in repositories.py |
+| Create scripts/normalize_relationships.py | ✅ DONE | Populate normalized tables from text fields |
+| Update NetworkService to query normalized tables | ✅ DONE | Prefers normalized, falls back to text parsing |
+| Extract AuditService from UpdaterService | ✅ DONE | Standalone audit logging service |
+| Create CrudService | ✅ DONE | Unified CRUD for all 7 entity types with Pydantic validation |
+| Create streamlit_app/pages/10_✏️_Editor.py | ✅ DONE | Dynamic forms from Pydantic model fields |
+| Add edit links on Companies and Network pages | ✅ DONE | Direct navigation to Editor |
+| Update EntityType enum (add INVESTOR, COLLABORATION) | ✅ DONE | In update_proposal model |
+| Add collaborations and funding_investors tables to schema | ✅ DONE | database.py |
+
+### 2.6 Remaining Phase 2 Tasks
 
 | Task | Status | Notes |
 |------|--------|-------|

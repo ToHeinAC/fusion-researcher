@@ -10,6 +10,8 @@ AI-powered nuclear fusion market intelligence platform that transforms static re
 - **Technology Analysis**: TRL matrix, technology comparison, development trends
 - **LLM-Powered Intelligence**: SWOT analysis, market insights, and automated research updates
 - **Report Generation**: Auto-generated market reports and company profiles
+- **Network Visualization**: Interactive pyvis graph of company-investor-partner relationships
+- **CRUD Editor**: Dynamic forms for creating/editing all entity types with audit logging
 
 ## Quick Start
 
@@ -60,6 +62,9 @@ ollama pull gpt-oss:20b
 uv run python scripts/init_db.py
 uv run python scripts/populate_sample_data.py
 
+# Normalize relationships (investors, partnerships, collaborations)
+uv run python scripts/normalize_relationships.py
+
 # Start Streamlit app
 uv run streamlit run streamlit_app/app.py
 ```
@@ -80,32 +85,31 @@ fusion-researcher/
 │   └── chroma_data/             # Vector embeddings
 ├── src/                         # Core application code
 │   ├── config.py                # Configuration management
-│   ├── models/                  # Data models
-│   ├── data/                    # Database and parsers
-│   ├── llm/                     # LLM integration
-│   ├── services/                # Business logic
-│   └── ui/                      # UI components
+│   ├── models/                  # Data models (Company, Funding, Technology, Market, Partnership)
+│   ├── data/                    # Database, repositories, and parsers
+│   │   └── parsers/             # Markdown + relationship parsers
+│   ├── llm/                     # LLM integration (LangChain)
+│   └── services/                # Business logic (12 services)
 ├── streamlit_app/               # Streamlit web application
 │   ├── app.py                   # Main entry point
-│   └── pages/                   # Multi-page app pages
-├── scripts/                     # Utility scripts
-├── tests/                       # Test suite
-└── docs/                        # Documentation
+│   └── pages/                   # 10 Streamlit pages
+├── scripts/                     # Utility scripts (init, populate, normalize, update pipeline)
+└── tests/                       # Test suite
 ```
 
 ## Technology Stack
 
 - **Backend**: Python 3.11+, SQLAlchemy, Pydantic
-- **LLM**: LangChain + OpenAI GPT-4
-- **Database**: SQLite (MVP), ChromaDB for vector search
+- **LLM**: LangChain + OpenAI GPT-4 / Ollama local models
+- **Database**: SQLite, ChromaDB for vector search
 - **Frontend**: Streamlit, Plotly
+- **Visualization**: pyvis / networkx for network graphs
 - **Package Manager**: uv
 
 ## Documentation
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [Database Schema](docs/DATABASE_SCHEMA.md)
-- [API Reference](docs/API_REFERENCE.md)
+- [Implementation Tracker](IMPLEMENTATION.md)
+- [Product Requirements](PRD.md)
 
 ## License
 

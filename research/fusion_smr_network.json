@@ -1,0 +1,915 @@
+{
+  "metadata": {
+    "title": "Fusion & SMR Industry Supply Chain Network",
+    "source": "binding.energy 2026 Conference (Heidelberg, Feb 3-5, 2026)",
+    "last_updated": "2026-02-06",
+    "version": "1.0"
+  },
+  "nodes": [
+    {
+      "id": "marvel_fusion",
+      "label": "Marvel Fusion",
+      "type": "fusion_company",
+      "country": "DE",
+      "technology": "ICF_laser",
+      "funding_eur_m": 385
+    },
+    {
+      "id": "proxima_fusion",
+      "label": "Proxima Fusion",
+      "type": "fusion_company",
+      "country": "DE",
+      "technology": "stellarator",
+      "funding_eur_m": 200
+    },
+    {
+      "id": "focused_energy",
+      "label": "Focused Energy",
+      "type": "fusion_company",
+      "country": "DE/US",
+      "technology": "ICF_laser",
+      "funding_eur_m": null
+    },
+    {
+      "id": "kyoto_fusioneering",
+      "label": "Kyoto Fusioneering",
+      "type": "fusion_company",
+      "country": "JP",
+      "technology": "tokamak_components",
+      "funding_eur_m": null
+    },
+    {
+      "id": "transmutex",
+      "label": "Transmutex",
+      "type": "transmutation_company",
+      "country": "CH",
+      "technology": "ADS_thorium",
+      "funding_chf_m": 20
+    },
+    {
+      "id": "gauss_fusion",
+      "label": "Gauss Fusion",
+      "type": "fusion_company",
+      "country": "DE",
+      "technology": "stellarator",
+      "funding_eur_m": null
+    },
+    {
+      "id": "fusion_fuel_cycles",
+      "label": "Fusion Fuel Cycles Inc.",
+      "type": "fusion_company",
+      "country": "CA",
+      "technology": "fuel_cycle",
+      "funding_eur_m": null
+    },
+    {
+      "id": "steady_energy",
+      "label": "Steady Energy",
+      "type": "smr_company",
+      "country": "FI",
+      "technology": "LWR_SMR",
+      "funding_eur_m": 32
+    },
+    {
+      "id": "copenhagen_atomics",
+      "label": "Copenhagen Atomics",
+      "type": "smr_company",
+      "country": "DK",
+      "technology": "MSR_thorium",
+      "funding_eur_m": null
+    },
+    {
+      "id": "nano_nuclear",
+      "label": "NANO Nuclear Energy",
+      "type": "smr_company",
+      "country": "US",
+      "technology": "HTGR_microreactor",
+      "funding_usd_m": 600
+    },
+    {
+      "id": "i_smr_korea",
+      "label": "i-SMR Project (Korea)",
+      "type": "smr_company",
+      "country": "KR",
+      "technology": "iPWR",
+      "funding_eur_m": null
+    },
+    {
+      "id": "siemens_energy",
+      "label": "Siemens Energy",
+      "type": "industrial_partner",
+      "country": "DE",
+      "sector": "energy_technology"
+    },
+    {
+      "id": "trumpf",
+      "label": "TRUMPF",
+      "type": "industrial_partner",
+      "country": "DE",
+      "sector": "laser_technology"
+    },
+    {
+      "id": "schott",
+      "label": "SCHOTT",
+      "type": "industrial_partner",
+      "country": "DE",
+      "sector": "optics"
+    },
+    {
+      "id": "heraeus",
+      "label": "Heraeus",
+      "type": "industrial_partner",
+      "country": "DE",
+      "sector": "materials"
+    },
+    {
+      "id": "jenoptik",
+      "label": "Jenoptik",
+      "type": "industrial_partner",
+      "country": "DE",
+      "sector": "optics"
+    },
+    {
+      "id": "laseroptik",
+      "label": "LASEROPTIK GmbH",
+      "type": "industrial_partner",
+      "country": "DE",
+      "sector": "optics"
+    },
+    {
+      "id": "thales",
+      "label": "Thales",
+      "type": "industrial_partner",
+      "country": "FR",
+      "sector": "defense_technology"
+    },
+    {
+      "id": "basf",
+      "label": "BASF",
+      "type": "industrial_partner",
+      "country": "DE",
+      "sector": "chemicals"
+    },
+    {
+      "id": "telekom",
+      "label": "Deutsche Telekom",
+      "type": "industrial_partner",
+      "country": "DE",
+      "sector": "telecom"
+    },
+    {
+      "id": "rwe",
+      "label": "RWE",
+      "type": "utility",
+      "country": "DE",
+      "sector": "energy"
+    },
+    {
+      "id": "fortum",
+      "label": "Fortum",
+      "type": "utility",
+      "country": "FI",
+      "sector": "energy"
+    },
+    {
+      "id": "doosan",
+      "label": "DOOSAN Enerbility",
+      "type": "industrial_partner",
+      "country": "KR",
+      "sector": "heavy_manufacturing"
+    },
+    {
+      "id": "hyosung",
+      "label": "HYOSUNG",
+      "type": "industrial_partner",
+      "country": "KR",
+      "sector": "engineering"
+    },
+    {
+      "id": "mitsubishi",
+      "label": "Mitsubishi",
+      "type": "industrial_partner",
+      "country": "JP",
+      "sector": "heavy_industry"
+    },
+    {
+      "id": "ald_vt",
+      "label": "ALD Vacuum Technologies",
+      "type": "industrial_partner",
+      "country": "DE",
+      "sector": "vacuum_furnaces"
+    },
+    {
+      "id": "newmox",
+      "label": "NewMOX SAS",
+      "type": "fuel_company",
+      "country": "FR",
+      "sector": "MOX_fuel"
+    },
+    {
+      "id": "amg",
+      "label": "AMG Critical Materials",
+      "type": "industrial_partner",
+      "country": "NL",
+      "sector": "materials"
+    },
+    {
+      "id": "fraunhofer_ilt",
+      "label": "Fraunhofer ILT",
+      "type": "research_institution",
+      "country": "DE",
+      "sector": "laser_research"
+    },
+    {
+      "id": "photonis",
+      "label": "Photonis Germany",
+      "type": "industrial_partner",
+      "country": "DE",
+      "sector": "photonics"
+    },
+    {
+      "id": "aecom",
+      "label": "AECOM",
+      "type": "industrial_partner",
+      "country": "US",
+      "sector": "engineering"
+    },
+    {
+      "id": "iter",
+      "label": "ITER",
+      "type": "research_institution",
+      "country": "FR",
+      "sector": "fusion_research"
+    },
+    {
+      "id": "mpi_ipp",
+      "label": "Max Planck IPP",
+      "type": "research_institution",
+      "country": "DE",
+      "sector": "plasma_physics"
+    },
+    {
+      "id": "kit",
+      "label": "KIT Karlsruhe",
+      "type": "research_institution",
+      "country": "DE",
+      "sector": "fusion_research"
+    },
+    {
+      "id": "tu_darmstadt",
+      "label": "TU Darmstadt",
+      "type": "research_institution",
+      "country": "DE",
+      "sector": "university"
+    },
+    {
+      "id": "hzdr",
+      "label": "HZDR Dresden-Rossendorf",
+      "type": "research_institution",
+      "country": "DE",
+      "sector": "research"
+    },
+    {
+      "id": "lmu_munich",
+      "label": "LMU Munich",
+      "type": "research_institution",
+      "country": "DE",
+      "sector": "university"
+    },
+    {
+      "id": "uni_rostock",
+      "label": "Uni Rostock",
+      "type": "research_institution",
+      "country": "DE",
+      "sector": "university"
+    },
+    {
+      "id": "colorado_state",
+      "label": "Colorado State University",
+      "type": "research_institution",
+      "country": "US",
+      "sector": "university"
+    },
+    {
+      "id": "cern",
+      "label": "CERN",
+      "type": "research_institution",
+      "country": "CH",
+      "sector": "particle_physics"
+    },
+    {
+      "id": "vtt",
+      "label": "VTT Finland",
+      "type": "research_institution",
+      "country": "FI",
+      "sector": "research"
+    },
+    {
+      "id": "cnl",
+      "label": "Canadian Nuclear Labs",
+      "type": "research_institution",
+      "country": "CA",
+      "sector": "nuclear_research"
+    },
+    {
+      "id": "ukaea",
+      "label": "UK Atomic Energy Authority",
+      "type": "research_institution",
+      "country": "UK",
+      "sector": "fusion_research"
+    },
+    {
+      "id": "psi",
+      "label": "Paul Scherrer Institute",
+      "type": "research_institution",
+      "country": "CH",
+      "sector": "research"
+    },
+    {
+      "id": "uiuc",
+      "label": "University of Illinois",
+      "type": "research_institution",
+      "country": "US",
+      "sector": "university"
+    },
+    {
+      "id": "snu",
+      "label": "Seoul National University",
+      "type": "research_institution",
+      "country": "KR",
+      "sector": "university"
+    },
+    {
+      "id": "iaea",
+      "label": "IAEA",
+      "type": "intl_organization",
+      "country": "INT",
+      "sector": "nuclear_safety"
+    },
+    {
+      "id": "eqt_ventures",
+      "label": "EQT Ventures",
+      "type": "investor",
+      "country": "SE"
+    },
+    {
+      "id": "cherry_ventures",
+      "label": "Cherry Ventures",
+      "type": "investor",
+      "country": "DE"
+    },
+    {
+      "id": "balderton",
+      "label": "Balderton Capital",
+      "type": "investor",
+      "country": "UK"
+    },
+    {
+      "id": "earlybird",
+      "label": "Earlybird",
+      "type": "investor",
+      "country": "DE"
+    },
+    {
+      "id": "eic_fund",
+      "label": "EIC Fund (European)",
+      "type": "investor",
+      "country": "EU"
+    },
+    {
+      "id": "dtcf",
+      "label": "DeepTech & Climate Fonds",
+      "type": "investor",
+      "country": "DE"
+    },
+    {
+      "id": "htgf",
+      "label": "HTGF",
+      "type": "investor",
+      "country": "DE"
+    },
+    {
+      "id": "bayern_kapital",
+      "label": "Bayern Kapital",
+      "type": "investor",
+      "country": "DE"
+    },
+    {
+      "id": "cdp_vc",
+      "label": "CDP Venture Capital",
+      "type": "investor",
+      "country": "IT"
+    },
+    {
+      "id": "brevan_howard",
+      "label": "Brevan Howard",
+      "type": "investor",
+      "country": "UK"
+    },
+    {
+      "id": "tengelmann",
+      "label": "Tengelmann Ventures",
+      "type": "investor",
+      "country": "DE"
+    },
+    {
+      "id": "union_square",
+      "label": "Union Square Ventures",
+      "type": "investor",
+      "country": "US"
+    },
+    {
+      "id": "steel_atlas",
+      "label": "Steel Atlas",
+      "type": "investor",
+      "country": "US"
+    },
+    {
+      "id": "bmftr",
+      "label": "BMFTR (Germany)",
+      "type": "government",
+      "country": "DE"
+    },
+    {
+      "id": "fusion_2040",
+      "label": "Fusion 2040 Program",
+      "type": "funding_program",
+      "country": "DE",
+      "budget_eur_m": 500
+    },
+    {
+      "id": "sprind",
+      "label": "SPRIND",
+      "type": "funding_program",
+      "country": "DE"
+    },
+    {
+      "id": "land_hessen",
+      "label": "Land Hessen",
+      "type": "government",
+      "country": "DE"
+    },
+    {
+      "id": "land_bayern",
+      "label": "Land Bayern",
+      "type": "government",
+      "country": "DE"
+    },
+    {
+      "id": "kepco",
+      "label": "KEPCO",
+      "type": "utility",
+      "country": "KR"
+    },
+    {
+      "id": "khnp",
+      "label": "KHNP",
+      "type": "utility",
+      "country": "KR"
+    },
+    {
+      "id": "biblis",
+      "label": "Biblis Site",
+      "type": "site",
+      "country": "DE",
+      "use": "laser_fusion_hub"
+    },
+    {
+      "id": "gundremmingen",
+      "label": "Gundremmingen Site",
+      "type": "site",
+      "country": "DE",
+      "use": "fusion_hub_potential"
+    },
+    {
+      "id": "adl",
+      "label": "Arthur D. Little",
+      "type": "consulting",
+      "country": "US"
+    },
+    {
+      "id": "pwc",
+      "label": "PwC",
+      "type": "consulting",
+      "country": "INT"
+    },
+    {
+      "id": "grs",
+      "label": "GRS",
+      "type": "consulting",
+      "country": "DE",
+      "sector": "nuclear_safety"
+    },
+    {
+      "id": "tuv_rheinland",
+      "label": "TÜV Rheinland",
+      "type": "consulting",
+      "country": "DE",
+      "sector": "certification"
+    },
+    {
+      "id": "tuv_nord",
+      "label": "TÜV Nord EnSys",
+      "type": "consulting",
+      "country": "DE",
+      "sector": "nuclear_safety"
+    },
+    {
+      "id": "hinneburg",
+      "label": "Hinneburg GmbH",
+      "type": "consulting",
+      "country": "DE",
+      "sector": "radiation_protection"
+    }
+  ],
+  "edges": [
+    {
+      "source": "marvel_fusion",
+      "target": "siemens_energy",
+      "type": "technology_partner",
+      "since": 2022
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "siemens_energy",
+      "type": "investor",
+      "since": 2025
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "trumpf",
+      "type": "technology_partner"
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "thales",
+      "type": "technology_partner"
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "basf",
+      "type": "shareholder"
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "telekom",
+      "type": "shareholder"
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "colorado_state",
+      "type": "academic_partner"
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "hzdr",
+      "type": "academic_partner"
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "uni_rostock",
+      "type": "academic_partner"
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "lmu_munich",
+      "type": "academic_partner"
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "eqt_ventures",
+      "type": "investor",
+      "since": 2025
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "eic_fund",
+      "type": "investor",
+      "since": 2025
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "earlybird",
+      "type": "investor"
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "tengelmann",
+      "type": "investor"
+    },
+    {
+      "source": "marvel_fusion",
+      "target": "bayern_kapital",
+      "type": "investor"
+    },
+    {
+      "source": "proxima_fusion",
+      "target": "mpi_ipp",
+      "type": "spin_out"
+    },
+    {
+      "source": "proxima_fusion",
+      "target": "cherry_ventures",
+      "type": "investor",
+      "since": 2025
+    },
+    {
+      "source": "proxima_fusion",
+      "target": "balderton",
+      "type": "investor",
+      "since": 2025
+    },
+    {
+      "source": "proxima_fusion",
+      "target": "dtcf",
+      "type": "investor"
+    },
+    {
+      "source": "proxima_fusion",
+      "target": "htgf",
+      "type": "investor"
+    },
+    {
+      "source": "proxima_fusion",
+      "target": "bayern_kapital",
+      "type": "investor"
+    },
+    {
+      "source": "proxima_fusion",
+      "target": "eic_fund",
+      "type": "investor"
+    },
+    {
+      "source": "proxima_fusion",
+      "target": "cdp_vc",
+      "type": "investor",
+      "since": 2025
+    },
+    {
+      "source": "proxima_fusion",
+      "target": "brevan_howard",
+      "type": "investor",
+      "since": 2025
+    },
+    {
+      "source": "proxima_fusion",
+      "target": "gundremmingen",
+      "type": "site_potential"
+    },
+    {
+      "source": "focused_energy",
+      "target": "tu_darmstadt",
+      "type": "spin_out"
+    },
+    {
+      "source": "focused_energy",
+      "target": "rwe",
+      "type": "site_partner"
+    },
+    {
+      "source": "focused_energy",
+      "target": "land_hessen",
+      "type": "government_support"
+    },
+    {
+      "source": "focused_energy",
+      "target": "biblis",
+      "type": "development_site"
+    },
+    {
+      "source": "focused_energy",
+      "target": "trumpf",
+      "type": "technology_partner"
+    },
+    {
+      "source": "focused_energy",
+      "target": "schott",
+      "type": "technology_partner"
+    },
+    {
+      "source": "focused_energy",
+      "target": "heraeus",
+      "type": "technology_partner"
+    },
+    {
+      "source": "focused_energy",
+      "target": "jenoptik",
+      "type": "technology_partner"
+    },
+    {
+      "source": "focused_energy",
+      "target": "laseroptik",
+      "type": "technology_partner"
+    },
+    {
+      "source": "focused_energy",
+      "target": "fraunhofer_ilt",
+      "type": "research_partner"
+    },
+    {
+      "source": "focused_energy",
+      "target": "hzdr",
+      "type": "research_partner"
+    },
+    {
+      "source": "focused_energy",
+      "target": "photonis",
+      "type": "technology_partner"
+    },
+    {
+      "source": "focused_energy",
+      "target": "adl",
+      "type": "consulting"
+    },
+    {
+      "source": "biblis",
+      "target": "rwe",
+      "type": "site_owner"
+    },
+    {
+      "source": "biblis",
+      "target": "land_hessen",
+      "type": "government_support"
+    },
+    {
+      "source": "biblis",
+      "target": "schott",
+      "type": "mou_partner"
+    },
+    {
+      "source": "biblis",
+      "target": "heraeus",
+      "type": "mou_partner"
+    },
+    {
+      "source": "biblis",
+      "target": "adl",
+      "type": "feasibility_study"
+    },
+    {
+      "source": "kyoto_fusioneering",
+      "target": "kit",
+      "type": "academic_partner"
+    },
+    {
+      "source": "kyoto_fusioneering",
+      "target": "mpi_ipp",
+      "type": "research_partner"
+    },
+    {
+      "source": "kyoto_fusioneering",
+      "target": "ukaea",
+      "type": "technology_partner"
+    },
+    {
+      "source": "kyoto_fusioneering",
+      "target": "cnl",
+      "type": "joint_venture"
+    },
+    {
+      "source": "kyoto_fusioneering",
+      "target": "fusion_fuel_cycles",
+      "type": "joint_venture"
+    },
+    {
+      "source": "kyoto_fusioneering",
+      "target": "mitsubishi",
+      "type": "industrial_partner"
+    },
+    {
+      "source": "kyoto_fusioneering",
+      "target": "pwc",
+      "type": "consulting"
+    },
+    {
+      "source": "fusion_fuel_cycles",
+      "target": "cnl",
+      "type": "joint_venture"
+    },
+    {
+      "source": "transmutex",
+      "target": "cern",
+      "type": "spin_out"
+    },
+    {
+      "source": "transmutex",
+      "target": "sprind",
+      "type": "funding"
+    },
+    {
+      "source": "transmutex",
+      "target": "union_square",
+      "type": "investor"
+    },
+    {
+      "source": "transmutex",
+      "target": "steel_atlas",
+      "type": "investor"
+    },
+    {
+      "source": "transmutex",
+      "target": "gundremmingen",
+      "type": "site_potential"
+    },
+    {
+      "source": "steady_energy",
+      "target": "vtt",
+      "type": "spin_out"
+    },
+    {
+      "source": "steady_energy",
+      "target": "fortum",
+      "type": "partnership"
+    },
+    {
+      "source": "copenhagen_atomics",
+      "target": "psi",
+      "type": "test_facility"
+    },
+    {
+      "source": "nano_nuclear",
+      "target": "uiuc",
+      "type": "prototype_site"
+    },
+    {
+      "source": "nano_nuclear",
+      "target": "cnl",
+      "type": "potential_partner"
+    },
+    {
+      "source": "nano_nuclear",
+      "target": "aecom",
+      "type": "engineering_partner"
+    },
+    {
+      "source": "i_smr_korea",
+      "target": "khnp",
+      "type": "developer"
+    },
+    {
+      "source": "i_smr_korea",
+      "target": "kepco",
+      "type": "supply_chain"
+    },
+    {
+      "source": "i_smr_korea",
+      "target": "doosan",
+      "type": "supply_chain"
+    },
+    {
+      "source": "i_smr_korea",
+      "target": "hyosung",
+      "type": "supply_chain"
+    },
+    {
+      "source": "i_smr_korea",
+      "target": "snu",
+      "type": "academic_partner"
+    },
+    {
+      "source": "ald_vt",
+      "target": "amg",
+      "type": "parent_company"
+    },
+    {
+      "source": "ald_vt",
+      "target": "newmox",
+      "type": "subsidiary"
+    },
+    {
+      "source": "bmftr",
+      "target": "fusion_2040",
+      "type": "operates"
+    },
+    {
+      "source": "fusion_2040",
+      "target": "marvel_fusion",
+      "type": "funding"
+    },
+    {
+      "source": "fusion_2040",
+      "target": "proxima_fusion",
+      "type": "funding"
+    },
+    {
+      "source": "fusion_2040",
+      "target": "focused_energy",
+      "type": "funding"
+    },
+    {
+      "source": "land_bayern",
+      "target": "gundremmingen",
+      "type": "government_support"
+    },
+    {
+      "source": "iter",
+      "target": "kyoto_fusioneering",
+      "type": "supply_chain"
+    },
+    {
+      "source": "iter",
+      "target": "mpi_ipp",
+      "type": "research_collaboration"
+    }
+  ]
+}

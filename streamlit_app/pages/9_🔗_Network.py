@@ -183,6 +183,20 @@ try:
             ]
             st.dataframe(table_data, use_container_width=True, hide_index=True)
 
+            # Edit link for company nodes
+            company_nodes = [n for n in filtered_data.nodes if n.type == "company"]
+            if company_nodes:
+                st.markdown("**Quick Edit:**")
+                edit_options = {n.label: n.id for n in company_nodes}
+                chosen = st.selectbox("Select company to edit", list(edit_options.keys()), key="net_edit_company")
+                if st.button("Edit in Editor", key="net_edit_btn"):
+                    node_id = edit_options[chosen]
+                    # Extract numeric ID from "company_123"
+                    numeric_id = int(node_id.replace("company_", ""))
+                    st.session_state.editor_mode = "edit"
+                    st.session_state.editor_edit_id = numeric_id
+                    st.switch_page("pages/10_✏️_Editor.py")
+
     # Edge details expander
     with st.expander("Relationship Details Table"):
         if filtered_data.edges:
